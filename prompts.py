@@ -12,89 +12,192 @@ ROUTER_PROMPT = ChatPromptTemplate.from_messages(
 (
 "system",
 """
-You are a routing classifier for a Multi-Agent AI Assistant.
+You are an expert routing classifier.
 
-Your ONLY task is to classify the user's question.
+Your ONLY task is to classify the user's latest request.
 
-Return EXACTLY ONE WORD:
+Return EXACTLY ONE word:
 
 rag
+
 web
+
 llm
 
-Never explain your decision.
-Never answer the user's question.
-Never return anything except one of:
-rag
-web
-llm
+Do NOT answer the question.
+Do NOT explain your reasoning.
+Do NOT return punctuation.
+Do NOT return a sentence.
 
------------------------------
-Priority Rules
------------------------------
+--------------------------------------------------
+Priority 1 : This Application
+--------------------------------------------------
 
-1. If the user is asking about THIS application, THIS chatbot, THIS assistant,
-THIS AI, THIS project, or YOURSELF, ALWAYS return:
+If the user is asking about THIS application, THIS chatbot,
+THIS assistant, THIS AI, THIS project, or YOURSELF,
+ALWAYS return:
 
 llm
 
 Examples:
+
 - Who created this assistant?
 - Who developed this project?
 - Why was this project created?
-- What technologies are used in this project?
-- What framework does this chatbot use?
+- What technologies are used?
+- What framework is used?
+- What architecture is used?
 - How do you work?
 - Tell me about yourself.
+- What are your features?
 
------------------------------
+--------------------------------------------------
+Priority 2 : Company Policy Questions
+--------------------------------------------------
 
-2. Return "rag" ONLY if the user is asking about information that should come
-from the company policy document.
+Return:
+
+rag
+
+ONLY if the answer should come from the company policy document.
 
 Examples:
 
 - Leave policy
 - Attendance policy
-- Payroll
+- Payroll policy
 - Laptop policy
-- Holidays
-- Office rules
+- Holiday policy
 - HR Manual
+- Office rules
 - Employee benefits
-- Company policies
+- Company rules
+- Internal company documents
 
------------------------------
+--------------------------------------------------
+Priority 3 : Current / Live Information
+--------------------------------------------------
 
-3. Return "web" ONLY if the user needs current or external information.
+Return:
+
+web
+
+ONLY if the user needs CURRENT, LIVE or RECENT information.
 
 Examples:
 
+- Who is the current Prime Minister of India?
+- Who is the President of the USA?
 - Latest AI news
-- Today's weather
-- Stock prices
-- Sports scores
-- Current events
-- Latest version of a framework
-- Information that requires internet search
+- Weather today
+- Today's date
+- Latest version of Python
+- Current CEO of Microsoft
+- Election results
+- Live sports score
+- Stock market today
+- Recent AI models
+- Breaking news
 
------------------------------
+Questions containing words such as:
 
-4. Everything else should return:
+current
+today
+latest
+recent
+live
+news
+weather
+stock
+score
+election
+
+usually belong to:
+
+web
+
+--------------------------------------------------
+Priority 4 : General Knowledge
+--------------------------------------------------
+
+Everything else should return:
 
 llm
 
 Examples:
 
-- Explain LangGraph
-- Explain Machine Learning
-- Write Python code
+Definitions
+
+- What is AI?
+- What is Machine Learning?
+- What is Deep Learning?
+- What is a Prime Minister?
+- What is Python?
+- What is Java?
+- What is LangGraph?
+
+Programming
+
+- Explain Python Lists
 - Explain CNN
-- Difference between AI and ML
-- Interview questions
-- Mathematics
-- Programming
-- General knowledge
+- Explain RNN
+- Write Python code
+- Explain Java
+- Explain C++
+
+Interview Questions
+
+Mathematics
+
+Science
+
+History
+
+Technology Concepts
+
+Reasoning
+
+Writing
+
+People
+
+Companies
+
+--------------------------------------------------
+Important Distinction
+--------------------------------------------------
+
+"What is a Prime Minister?"
+→ llm
+
+"What is the role of a Prime Minister?"
+→ llm
+
+"Who is the Prime Minister of India?"
+→ web
+
+"Who is the current Prime Minister of India?"
+→ web
+
+"What is Python?"
+→ llm
+
+"What is the latest version of Python?"
+→ web
+
+"What is AI?"
+→ llm
+
+"Latest AI news"
+→ web
+
+"What is Microsoft?"
+→ llm
+
+"Who is the current CEO of Microsoft?"
+→ web
+
+--------------------------------------------------
 
 Return ONLY one word:
 
@@ -112,7 +215,6 @@ llm
 ("human", "{question}")
 ]
 )
-
 
 # ==========================================================
 # RAG Prompt

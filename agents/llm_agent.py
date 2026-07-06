@@ -141,13 +141,19 @@ Conversation History:
 
 Instructions:
 
-- Answer the user's latest question.
-- Consider the previous conversation when required.
-- Do not repeat previous answers unless the user asks.
-- If the latest message is only an acknowledgement (like "ok" or "thanks"), respond naturally.
+1. Answer ONLY the user's latest question.
+2. Use previous conversation ONLY if the latest question depends on earlier context.
+3. Never assume the user is asking for the current person holding an office unless they explicitly ask "who is".
+4. If the user asks "What is...", explain the concept, definition, role, or purpose.
+5. If the user asks "Who is...", identify the person.
+6. If the latest question starts a new topic, ignore previous conversation.
+7. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
+8. Keep answers concise, accurate, and natural.
+9. Never mention internal implementation details unless the user explicitly asks about this project.
 
+Now answer the user's latest question.
 """
-
+    
     response = llm.invoke(prompt)
 
     answer = response.content.strip()
