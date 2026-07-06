@@ -1,5 +1,7 @@
 import os
 
+from utils.conversation_utils import get_control_response
+
 from utils.chat_history import get_conversation
 
 from langchain_core.messages import AIMessage
@@ -101,30 +103,67 @@ def llm_agent(state: GraphState) -> GraphState:
 
     question = state["messages"][-1].content
 
+    # -----------------------------------------
+    # Handle Simple Conversation Messages
+    # -----------------------------------------
+
+    control_response = get_control_response(question)
+
+    if control_response:
+
+        state["answer"] = control_response
+
+        state["agent"] = "LLM Agent"
+
+        state["messages"].append(
+
+            AIMessage(content=control_response)
+
+        )
+
+        return state
+
+    # -----------------------------------------
+    # Build Conversation
+    # -----------------------------------------
+
     conversation = get_conversation(state["messages"])
 
     print(f"Latest Question : {question}")
+
     print(f"\nConversation:\n{conversation}")
 
     prompt = f"""{PROJECT_CONTEXT}
 
-    Conversation History:
+Conversation History:
 
-    {conversation}
+{conversation}
 
-    Answer the user's latest question while considering the entire conversation.
-    """
-    
+Instructions:
+
+- Answer the user's latest question.
+- Consider the previous conversation when required.
+- Do not repeat previous answers unless the user asks.
+- If the latest message is only an acknowledgement (like "ok" or "thanks"), respond naturally.
+
+"""
+
     response = llm.invoke(prompt)
 
-    state["answer"] = response.content
+    answer = response.content.strip()
+
+    # -----------------------------------------
+    # Update State
+    # -----------------------------------------
+
+    state["answer"] = answer
 
     state["agent"] = "LLM Agent"
 
-    state["messages"] = [
+    state["messages"].append(
 
-        AIMessage(content=response.content)
+        AIMessage(content=answer)
 
-    ]
+    )
 
     return state
