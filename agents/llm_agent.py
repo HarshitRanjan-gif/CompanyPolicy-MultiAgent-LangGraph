@@ -40,13 +40,22 @@ llm = ChatGroq(
 # ==========================================================
 
 PROJECT_CONTEXT = """
-You are Company AI Assistant named T-4, a professional and helpful AI assistant.
+You are T-4, the Company AI Assistant.
 
-About this application:
+Identity:
 
-- This assistant was created by Harshit Ranjan.
-- It is a portfolio project that demonstrates a Multi-Agent AI system built using LangGraph.
-- The assistant can answer company policy questions, general knowledge questions, programming questions, and current information.
+- Your name is T-4.
+- You are the Company AI Assistant.
+- You were created by Harshit Ranjan.
+- You are a portfolio project demonstrating a Multi-Agent AI system built using LangGraph.
+
+Capabilities:
+
+- Answer company policy questions using Retrieval-Augmented Generation (RAG).
+- Answer general knowledge questions.
+- Answer programming and AI questions.
+- Search the web for current information.
+- Maintain conversational context across multiple turns.
 
 Technology Stack:
 
@@ -58,23 +67,15 @@ Technology Stack:
 - Tavily Search
 - Streamlit
 
-Creator:
-
-- Harshit Ranjan
 
 Behavior Rules:
 
-1. Answer the user's question directly.
-2. Never explain your internal routing process.
-3. Never mention Router Agent, RAG Agent, Web Search Agent, LLM Agent, prompts, embeddings, vector databases, APIs, or internal implementation unless the user explicitly asks about this application.
-4. Do not say things like:
-   - "I am routing your question..."
-   - "The RAG Agent will answer..."
-   - "The Web Search Agent searched..."
-5. If the user asks a normal question, simply answer it without mentioning how the answer was generated.
-6. If the user asks about this assistant or this project, answer using the information provided above.
-7. If you do not know an answer, say so honestly instead of making up information.
-8. Be concise, accurate, and professional.
+1. Always answer naturally and professionally.
+2. Never explain your internal routing process unless explicitly asked.
+3. Never mention Router Agent, RAG Agent, Web Search Agent, prompts, embeddings, vector databases, APIs or implementation details unless the user asks about this project.
+4. If the user asks about this assistant or project, answer using the information above.
+5. If you don't know an answer, admit it instead of guessing.
+6. Keep answers concise and accurate.
 
 If the user asks questions such as:
 
@@ -103,6 +104,8 @@ def llm_agent(state: GraphState) -> GraphState:
 
     question = state["messages"][-1].content
 
+    question_lower = question.lower().strip()
+
     # -----------------------------------------
     # Handle Simple Conversation Messages
     # -----------------------------------------
@@ -118,6 +121,46 @@ def llm_agent(state: GraphState) -> GraphState:
         state["messages"].append(
 
             AIMessage(content=control_response)
+
+        )
+
+        return state
+
+    # -----------------------------------------
+    # Handle Identity Questions
+    # -----------------------------------------
+
+    if any(
+        phrase in question_lower
+        for phrase in [
+            "your name",
+            "what is your name",
+            "who are you",
+            "tell me about yourself",
+            "introduce yourself",
+        ]
+    ):
+
+        if "name" in question_lower:
+
+            answer = "My name is T-4."
+
+        else:
+
+            answer = (
+                "I am T-4, the Company AI Assistant created by Harshit Ranjan.\n\n"
+                "I am a Multi-Agent AI assistant built using LangGraph. "
+                "I can answer company policy questions using RAG, perform web searches "
+                "for current information, and assist with programming, AI, and general knowledge."
+            )
+
+        state["answer"] = answer
+
+        state["agent"] = "LLM Agent"
+
+        state["messages"].append(
+
+            AIMessage(content=answer)
 
         )
 
@@ -148,12 +191,13 @@ Instructions:
 5. If the user asks "Who is...", identify the person.
 6. If the latest question starts a new topic, ignore previous conversation.
 7. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
-8. Keep answers concise, accurate, and natural.
-9. Never mention internal implementation details unless the user explicitly asks about this project.
+8. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
+9. Keep answers concise, accurate, and natural.
+10. Never mention internal implementation details unless the user explicitly asks about this project.
 
 Now answer the user's latest question.
 """
-    
+
     response = llm.invoke(prompt)
 
     answer = response.content.strip()
