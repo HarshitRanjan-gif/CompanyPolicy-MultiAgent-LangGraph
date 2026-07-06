@@ -53,6 +53,88 @@ def router_agent(state: GraphState) -> GraphState:
     print(f"Latest Question     : {question}")
     print(f"Standalone Question : {standalone_question}")
 
+    question_lower = standalone_question.lower()
+
+    # -----------------------------------------
+    # Rule-Based Routing
+    # -----------------------------------------
+
+    # Company Policy (RAG)
+    rag_keywords = [
+        "leave",
+        "attendance",
+        "payroll",
+        "holiday",
+        "hr",
+        "employee",
+        "policy",
+        "policies",
+        "office rule",
+        "office rules",
+        "handbook",
+        "benefits",
+        "company policy",
+    ]
+
+    # Current / External Information (WEB)
+    web_keywords = [
+        "current",
+        "today",
+        "latest",
+        "recent",
+        "news",
+        "weather",
+        "temperature",
+        "forecast",
+        "stock",
+        "stock price",
+        "share price",
+        "ceo",
+        "founder",
+        "president",
+        "prime minister",
+        "governor",
+        "minister",
+        "election",
+        "live",
+        "breaking",
+        "released",
+        "release date",
+        "version",
+        "price",
+        "cost",
+        "fees",
+        "salary",
+        "private limited",
+        "pvt ltd",
+        "limited",
+        "inc",
+        "llp",
+        "corporation",
+    ]
+
+    # ---------- RAG ----------
+
+    if any(keyword in question_lower for keyword in rag_keywords):
+
+        print("Rule-Based Route : rag")
+
+        state["route"] = "rag"
+        state["standalone_question"] = standalone_question
+
+        return state
+
+    # ---------- WEB ----------
+
+    if any(keyword in question_lower for keyword in web_keywords):
+
+        print("Rule-Based Route : web")
+
+        state["route"] = "web"
+        state["standalone_question"] = standalone_question
+
+        return state
+
     # -----------------------------------------
     # Ask Router LLM
     # -----------------------------------------
@@ -73,7 +155,6 @@ def router_agent(state: GraphState) -> GraphState:
 
     route = response.content.strip().lower()
 
-    # Keep only letters (handles llm., web:, rag,)
     route = re.sub(r"[^a-z]", "", route)
 
     # -----------------------------------------
@@ -88,7 +169,7 @@ def router_agent(state: GraphState) -> GraphState:
 
         route = "llm"
 
-    print(f"Selected Route : {route}")
+    print(f"LLM Selected Route : {route}")
 
     # -----------------------------------------
     # Update State

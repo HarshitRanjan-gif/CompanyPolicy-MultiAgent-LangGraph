@@ -14,7 +14,7 @@ ROUTER_PROMPT = ChatPromptTemplate.from_messages(
 """
 You are an expert routing classifier.
 
-Your ONLY task is to classify the user's latest request.
+Your ONLY task is to decide WHERE the answer should come from.
 
 Return EXACTLY ONE word:
 
@@ -24,182 +24,213 @@ web
 
 llm
 
-Do NOT answer the question.
+Do NOT answer the user's question.
 Do NOT explain your reasoning.
 Do NOT return punctuation.
 Do NOT return a sentence.
 
---------------------------------------------------
-Priority 1 : This Application
---------------------------------------------------
-
-If the user is asking about THIS application, THIS chatbot,
-THIS assistant, THIS AI, THIS project, or YOURSELF,
-ALWAYS return:
-
-llm
-
-Examples:
-
-- Who created this assistant?
-- Who developed this project?
-- Why was this project created?
-- What technologies are used?
-- What framework is used?
-- What architecture is used?
-- How do you work?
-- Tell me about yourself.
-- What are your features?
-
---------------------------------------------------
-Priority 2 : Company Policy Questions
---------------------------------------------------
+==================================================
+1. RAG
+==================================================
 
 Return:
 
 rag
 
-ONLY if the answer should come from the company policy document.
+ONLY if the answer should come from the company's internal documents.
 
 Examples:
 
 - Leave policy
 - Attendance policy
-- Payroll policy
+- Payroll
 - Laptop policy
 - Holiday policy
+- Employee handbook
 - HR Manual
 - Office rules
-- Employee benefits
-- Company rules
-- Internal company documents
+- Company benefits
+- Internal policies
+- Company documents
 
---------------------------------------------------
-Priority 3 : Current / Live Information
---------------------------------------------------
+==================================================
+2. WEB
+==================================================
 
 Return:
 
 web
 
-ONLY if the user needs CURRENT, LIVE or RECENT information.
+If the answer depends on information outside the company documents.
+
+This includes:
+
+• Companies
+• Organizations
+• Businesses
+• Startups
+• Universities
+• Government departments
+• Public services
+• Products
+• Technologies released after the model's knowledge cutoff
+• Current events
+• News
+• Weather
+• Elections
+• Sports
+• Stock prices
+• Current office holders
+• CEOs
+• Prices
+• Recent releases
 
 Examples:
 
-- Who is the current Prime Minister of India?
-- Who is the President of the USA?
-- Latest AI news
-- Weather today
-- Today's date
-- Latest version of Python
-- Current CEO of Microsoft
-- Election results
-- Live sports score
-- Stock market today
-- Recent AI models
-- Breaking news
+What is Cyfuture?
 
-Questions containing words such as:
+Tell me about Infosys.
 
-current
-today
-latest
-recent
-live
-news
-weather
-stock
-score
-election
+What is OpenAI?
 
-usually belong to:
+Tell me about Google.
 
-web
+Who is the CEO of Microsoft?
 
---------------------------------------------------
-Priority 4 : General Knowledge
---------------------------------------------------
+Who owns NVIDIA?
 
-Everything else should return:
+What is Tata Motors?
+
+Explain Cyfuture India Private Limited.
+
+What is ChatGPT?
+
+Latest AI news
+
+Latest Python version
+
+Weather today
+
+Current Prime Minister of India
+
+Current President of USA
+
+Stock market today
+
+==================================================
+3. LLM
+==================================================
+
+Return:
 
 llm
 
+For explanations, reasoning, coding, mathematics, writing, and stable knowledge.
+
 Examples:
 
-Definitions
+What is AI?
 
-- What is AI?
-- What is Machine Learning?
-- What is Deep Learning?
-- What is a Prime Minister?
-- What is Python?
-- What is Java?
-- What is LangGraph?
+What is Machine Learning?
 
-Programming
+What is a Prime Minister?
 
-- Explain Python Lists
-- Explain CNN
-- Explain RNN
-- Write Python code
-- Explain Java
-- Explain C++
+Explain Python.
 
-Interview Questions
+Explain CNN.
 
-Mathematics
+Difference between AI and ML.
 
-Science
+Write a Python program.
 
-History
+Explain recursion.
 
-Technology Concepts
+Interview questions.
 
-Reasoning
+Mathematics.
 
-Writing
+Science.
 
-People
+History.
 
-Companies
+Reasoning.
 
---------------------------------------------------
-Important Distinction
---------------------------------------------------
+Grammar.
 
-"What is a Prime Minister?"
+Writing.
+
+==================================================
+4. THIS APPLICATION
+==================================================
+
+ALWAYS return:
+
+llm
+
+If the user is asking about this assistant.
+
+Examples:
+
+Who created you?
+
+Who made this assistant?
+
+Tell me about yourself.
+
+What is your name?
+
+How do you work?
+
+What technologies are used?
+
+What architecture is used?
+
+Why was this project created?
+
+==================================================
+Important Examples
+==================================================
+
+Leave policy
+→ rag
+
+Attendance policy
+→ rag
+
+What is AI?
 → llm
 
-"What is the role of a Prime Minister?"
+Explain Machine Learning.
 → llm
 
-"Who is the Prime Minister of India?"
-→ web
-
-"Who is the current Prime Minister of India?"
-→ web
-
-"What is Python?"
+What is a Prime Minister?
 → llm
 
-"What is the latest version of Python?"
+Who is the Prime Minister of India?
 → web
 
-"What is AI?"
+What is Cyfuture?
+→ web
+
+Tell me about Infosys.
+→ web
+
+Who is the CEO of Google?
+→ web
+
+Latest AI News.
+→ web
+
+Weather today.
+→ web
+
+What is Python?
 → llm
 
-"Latest AI news"
+Latest Python version.
 → web
 
-"What is Microsoft?"
-→ llm
-
-"Who is the current CEO of Microsoft?"
-→ web
-
---------------------------------------------------
-
-Return ONLY one word:
+Return ONLY:
 
 rag
 
@@ -215,6 +246,7 @@ llm
 ("human", "{question}")
 ]
 )
+
 
 # ==========================================================
 # RAG Prompt
