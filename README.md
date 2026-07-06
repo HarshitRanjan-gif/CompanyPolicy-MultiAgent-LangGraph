@@ -12,9 +12,7 @@ A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS
 
 ## 🖥️ Live Demo
 
-**Open App**
-
-*(https://companypolicy-multiagent-langgraph-zj3fnpxozltx7mvfjfderr.streamlit.app/)*
+[Open App](https://companypolicy-multiagent-langgraph-zj3fnpxozltx7mvfjfderr.streamlit.app/)
 
 ---
 
