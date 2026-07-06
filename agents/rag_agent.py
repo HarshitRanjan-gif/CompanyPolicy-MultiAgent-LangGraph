@@ -57,8 +57,10 @@ def rag_agent(state: GraphState) -> GraphState:
     # Retrieve Documents
     # -----------------------------------------
 
-    standalone_question = rewrite_question(state)
-    documents = retriever.invoke(standalone_question)
+    if not state["standalone_question"]:
+        state["standalone_question"] = rewrite_question(state)
+
+    documents = retriever.invoke(state["standalone_question"])
 
     print(f"Retrieved Documents : {len(documents)}")
 
@@ -95,7 +97,7 @@ def rag_agent(state: GraphState) -> GraphState:
 
             RAG_PROMPT.format_messages(
 
-                question=standalone_question,
+                question=state["standalone_question"],
 
                 context=context
 

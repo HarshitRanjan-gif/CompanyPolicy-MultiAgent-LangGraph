@@ -17,7 +17,7 @@ def ask_chatbot(question, session_id=None):
 
             "messages": [HumanMessage(content=question)],
 
-            "question": question,
+            "standalone_question": "",
 
             "route": "",
 

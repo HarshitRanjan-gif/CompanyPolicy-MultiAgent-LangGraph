@@ -48,12 +48,12 @@ def router_agent(state: GraphState) -> GraphState:
 
     question = state["messages"][-1].content
 
-    standalone_question = rewrite_question(state)
+    state["standalone_question"] = rewrite_question(state)
 
     print(f"Latest Question     : {question}")
-    print(f"Standalone Question : {standalone_question}")
+    print(f"Standalone Question : {state['standalone_question']}")
 
-    question_lower = standalone_question.lower()
+    question_lower = state["standalone_question"].lower()
 
     # -----------------------------------------
     # Rule-Based Routing
@@ -120,7 +120,6 @@ def router_agent(state: GraphState) -> GraphState:
         print("Rule-Based Route : rag")
 
         state["route"] = "rag"
-        state["standalone_question"] = standalone_question
 
         return state
 
@@ -131,7 +130,6 @@ def router_agent(state: GraphState) -> GraphState:
         print("Rule-Based Route : web")
 
         state["route"] = "web"
-        state["standalone_question"] = standalone_question
 
         return state
 
@@ -143,7 +141,7 @@ def router_agent(state: GraphState) -> GraphState:
 
         ROUTER_PROMPT.format_messages(
 
-            question=standalone_question
+            question=state["standalone_question"]
 
         )
 
@@ -176,7 +174,5 @@ def router_agent(state: GraphState) -> GraphState:
     # -----------------------------------------
 
     state["route"] = route
-
-    state["standalone_question"] = standalone_question
 
     return state
