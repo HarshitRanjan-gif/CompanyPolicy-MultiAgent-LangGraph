@@ -8,6 +8,7 @@ langchain-huggingface
 langchain-text-splitters
 faiss-cpu
 sentence-transformers
+transformers
 huggingface-hub
 python-dotenv
 pypdf
