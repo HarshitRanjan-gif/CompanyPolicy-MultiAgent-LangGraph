@@ -6,7 +6,7 @@ A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS
 
 ## 📷 Application Screenshot
 
-*(<img width="1907" height="882" alt="image" src="https://github.com/user-attachments/assets/01045b29-389b-4594-8ea0-dc86f8dd2221" />)*
+<img width="1907" height="882" alt="image" src="https://github.com/user-attachments/assets/01045b29-389b-4594-8ea0-dc86f8dd2221" />
 
 ---
 
