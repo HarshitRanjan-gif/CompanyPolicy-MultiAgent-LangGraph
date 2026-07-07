@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 from langchain_core.messages import AIMessage
 
+from config import get_llm
+
 from utils.query_rewriter import rewrite_question
 
 from langchain_groq import ChatGroq
@@ -24,15 +26,7 @@ load_dotenv()
 # LLM
 # ==========================================================
 
-llm = ChatGroq(
-
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-
-    model_name="llama-3.3-70b-versatile",
-
-    temperature=0.2
-
-)
+llm = get_llm()
 
 
 # ==========================================================
@@ -90,12 +84,17 @@ Instructions:
 
 1. Answer ONLY the user's question.
 2. Ignore any unrelated information in the search results.
-3. Do not summarize every search result.
-4. If multiple search results exist, combine only the relevant information.
+3. Do not summarize every search result — combine only the relevant information.
+4. If multiple search results exist and they conflict or cover different entities (e.g. different countries, versions, or time periods), clearly separate them instead of blending them together.
 5. If the answer cannot be found, say:
 "I couldn't find sufficient information."
+6. Provide a complete, well-explained answer. Include relevant details such as names, dates, numbers, or context where available, but avoid repeating the same point multiple times.
+7. Format your answer using Markdown for readability:
+   - Use bold text for key terms, names, or headers when the answer has multiple parts.
+   - Use bullet points or numbered lists when presenting multiple facts, items, or comparisons.
+   - Keep paragraphs short and scannable rather than one dense block of text.
 
-Give a concise and accurate answer.
+Now answer the user's question.
 """
 
 

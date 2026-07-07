@@ -4,6 +4,8 @@ from utils.conversation_utils import get_control_response
 
 from utils.chat_history import get_conversation
 
+from config import get_llm
+
 from langchain_core.messages import AIMessage
 
 from dotenv import load_dotenv
@@ -24,15 +26,7 @@ load_dotenv()
 # LLM
 # ==========================================================
 
-llm = ChatGroq(
-
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-
-    model_name="llama-3.3-70b-versatile",
-
-    temperature=0.2
-
-)
+llm = get_llm()
 
 
 # ==========================================================
@@ -75,7 +69,7 @@ Behavior Rules:
 3. Never mention Router Agent, RAG Agent, Web Search Agent, prompts, embeddings, vector databases, APIs or implementation details unless the user asks about this project.
 4. If the user asks about this assistant or project, answer using the information above.
 5. If you don't know an answer, admit it instead of guessing.
-6. Keep answers concise and accurate.
+6. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
 
 If the user asks questions such as:
 
@@ -192,8 +186,13 @@ Instructions:
 6. If the latest question starts a new topic, ignore previous conversation.
 7. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
 8. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
-9. Keep answers concise, accurate, and natural.
+9. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
 10. Never mention internal implementation details unless the user explicitly asks about this project.
+11. Format your answer using Markdown for readability:
+    - Use bold section headers (e.g. **Importing Libraries**) to break up multi-part explanations.
+    - When explaining code, include the relevant snippet in a fenced code block (```python ... ```) under each header before explaining it.
+    - Use bullet points or numbered steps for sequences or lists.
+    - Keep a short one-line intro before diving into sections, for longer explanations.
 
 Now answer the user's latest question.
 """

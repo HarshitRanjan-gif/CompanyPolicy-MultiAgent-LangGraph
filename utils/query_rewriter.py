@@ -2,6 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
+from config import get_llm
+
 from langchain_groq import ChatGroq
 
 from utils.chat_history import get_conversation
@@ -18,15 +20,7 @@ load_dotenv()
 # LLM
 # ==========================================================
 
-llm = ChatGroq(
-
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-
-    model_name="llama-3.1-8b-instant",
-
-    temperature=0
-
-)
+llm = get_llm(temperature=0)
 
 
 # ==========================================================

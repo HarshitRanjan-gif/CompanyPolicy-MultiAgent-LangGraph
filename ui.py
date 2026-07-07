@@ -27,7 +27,7 @@ def render_sidebar():
         st.write("📚 FAISS Vector Store")
         st.write("🤗 BGE-M3 Embeddings")
         st.write("🌐 Tavily Search")
-        st.write("⚡ Groq Llama 3.1")
+        st.write("⚡ Groq Llama 3.3")
         st.write("🧠 LangGraph Memory")
 
         st.markdown("---")

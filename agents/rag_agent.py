@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 from utils.query_rewriter import rewrite_question
 
+from config import get_llm
+
 from langchain_core.messages import AIMessage
 from langchain_groq import ChatGroq
 
@@ -23,16 +25,7 @@ load_dotenv()
 # LLM
 # ==========================================================
 
-llm = ChatGroq(
-
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-
-    model_name="llama-3.3-70b-versatile",
-
-    temperature=0.2
-
-)
-
+llm = get_llm()
 
 # ==========================================================
 # Retriever
