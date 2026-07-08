@@ -26,7 +26,7 @@ load_dotenv()
 # LLM
 # ==========================================================
 
-llm = get_llm()
+llm = get_llm(temperature=0)
 
 
 # ==========================================================
@@ -178,21 +178,40 @@ Conversation History:
 
 Instructions:
 
-1. Answer ONLY the user's latest question.
-2. Use previous conversation ONLY if the latest question depends on earlier context.
-3. Never assume the user is asking for the current person holding an office unless they explicitly ask "who is".
-4. If the user asks "What is...", explain the concept, definition, role, or purpose.
-5. If the user asks "Who is...", identify the person.
-6. If the latest question starts a new topic, ignore previous conversation.
-7. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
-8. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
-9. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
-10. Never mention internal implementation details unless the user explicitly asks about this project.
-11. Format your answer using Markdown for readability:
-    - Use bold section headers (e.g. **Importing Libraries**) to break up multi-part explanations.
-    - When explaining code, include the relevant snippet in a fenced code block (```python ... ```) under each header before explaining it.
-    - Use bullet points or numbered steps for sequences or lists.
-    - Keep a short one-line intro before diving into sections, for longer explanations.
+1. Format your answer using Markdown headers and bullet lists. Use "##" (two hash symbols followed by a space) for every section heading, and "-" for every bullet point. Follow this general structure, adapting section names and depth to fit the question:
+
+## [First Section — e.g. Introduction, Overview, or the first logical part of the topic]
+Brief explanation paragraph. Add 2-4 sentences if the topic needs more depth.
+
+## [Second Section — e.g. Key Features, How It Works, or Steps]
+- First point, explained with enough detail to be useful, not just a phrase
+- Second point
+- Third point (add more bullets if the topic has more relevant sub-points)
+
+## [Third Section — e.g. Use Cases, Examples, or Applications]
+- First example, with a short explanation of why/how it applies
+- Second example
+
+## [Optional further sections as needed — e.g. Comparisons, Pros and Cons, Common Mistakes]
+
+## Conclusion
+Short wrap-up paragraph summarizing the key takeaway.
+
+Guidelines:
+- Add as many sections and bullet points as the topic genuinely requires — don't artificially limit yourself to exactly these four sections.
+- For code explanations, use a section per logical part of the code (e.g. Imports, Setup, Function Definition, Logic, Error Handling), with the relevant code shown in a fenced code block (```python ... ```) under each heading before explaining it.
+- Never write a heading as plain text without "##", and never write a list as plain sentences without "-".
+
+2. Answer ONLY the user's latest question.
+3. Use previous conversation ONLY if the latest question depends on earlier context.
+4. Never assume the user is asking for the current person holding an office unless they explicitly ask "who is".
+5. If the user asks "What is...", explain the concept, definition, role, or purpose.
+6. If the user asks "Who is...", identify the person.
+7. If the latest question starts a new topic, ignore previous conversation.
+8. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
+9. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
+10. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
+11. Never mention internal implementation details unless the user explicitly asks about this project.
 
 Now answer the user's latest question.
 """

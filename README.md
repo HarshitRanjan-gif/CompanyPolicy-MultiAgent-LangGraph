@@ -1,6 +1,6 @@
 # Company AI Assistant (LangGraph)
 
-A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS**, **Groq Llama 3.1**, **Tavily Search**, and **Streamlit**. The assistant intelligently routes user queries to specialized agents for company policy retrieval, web search, or general knowledge, providing accurate and context-aware responses.
+A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS**, **Groq Llama 3.3**, **Tavily Search**, and **Streamlit**. The assistant intelligently routes user queries to specialized agents for company policy retrieval, web search, or general knowledge, providing accurate and context-aware responses.
 
 ---
 
