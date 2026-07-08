@@ -2,7 +2,9 @@ import os
 
 from utils.conversation_utils import get_control_response
 
-from utils.chat_history import get_conversation
+from utils.chat_history import get_conversation, get_recent_messages
+
+from utils.query_rewriter import rewrite_question
 
 from config import get_llm
 
@@ -161,12 +163,22 @@ def llm_agent(state: GraphState) -> GraphState:
         return state
 
     # -----------------------------------------
-    # Build Conversation
+    # Rewrite Question + Build Conversation
     # -----------------------------------------
 
-    conversation = get_conversation(state["messages"])
+    if not state.get("standalone_question"):
 
-    print(f"Latest Question : {question}")
+        state["standalone_question"] = rewrite_question(state)
+
+    standalone_question = state["standalone_question"]
+
+    recent_messages = get_recent_messages(state["messages"])
+
+    conversation = get_conversation(recent_messages)
+
+    print(f"Latest Question     : {question}")
+
+    print(f"Standalone Question : {standalone_question}")
 
     print(f"\nConversation:\n{conversation}")
 
@@ -202,18 +214,18 @@ Guidelines:
 - For code explanations, use a section per logical part of the code (e.g. Imports, Setup, Function Definition, Logic, Error Handling), with the relevant code shown in a fenced code block (```python ... ```) under each heading before explaining it.
 - Never write a heading as plain text without "##", and never write a list as plain sentences without "-".
 
-2. Answer ONLY the user's latest question.
-3. Use previous conversation ONLY if the latest question depends on earlier context.
-4. Never assume the user is asking for the current person holding an office unless they explicitly ask "who is".
-5. If the user asks "What is...", explain the concept, definition, role, or purpose.
-6. If the user asks "Who is...", identify the person.
-7. If the latest question starts a new topic, ignore previous conversation.
-8. If the latest question is a follow-up (like "its role", "of India", "when was he born"), use the previous conversation to understand what the user is referring to.
-9. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
-10. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
-11. Never mention internal implementation details unless the user explicitly asks about this project.
+2. Answer ONLY the user's latest question:
 
-Now answer the user's latest question.
+{standalone_question}
+
+3. Never assume the user is asking for the current person holding an office unless they explicitly ask "who is".
+4. If the user asks "What is...", explain the concept, definition, role, or purpose.
+5. If the user asks "Who is...", identify the person.
+6. If the latest question is ambiguous (for example "Prime Minister"), politely ask a short clarifying question instead of making assumptions.
+7. Provide a complete, well-explained answer. Include relevant details, context, and examples where helpful, without unnecessary repetition.
+8. Never mention internal implementation details unless the user explicitly asks about this project.
+
+Now answer the standalone question above.
 """
 
     response = llm.invoke(prompt)

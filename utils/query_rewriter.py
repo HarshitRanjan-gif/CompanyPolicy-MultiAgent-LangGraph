@@ -6,7 +6,7 @@ from config import get_llm
 
 from langchain_groq import ChatGroq
 
-from utils.chat_history import get_conversation
+from utils.chat_history import get_conversation, get_recent_messages
 
 
 # ==========================================================
@@ -31,7 +31,9 @@ def rewrite_question(state):
 
     question = state["messages"][-1].content
 
-    conversation = get_conversation(state["messages"])
+    recent_messages = get_recent_messages(state["messages"])
+
+    conversation = get_conversation(recent_messages)
 
     prompt = f"""
 You are an AI assistant.

@@ -89,10 +89,9 @@ Instructions:
 5. If the answer cannot be found, say:
 "I couldn't find sufficient information."
 6. Provide a complete, well-explained answer. Include relevant details such as names, dates, numbers, or context where available, but avoid repeating the same point multiple times.
-7. Format your answer using Markdown for readability:
-   - Use bold Markdown syntax (**Key Term**) for key terms, names, or headers — do not just write them as plain text.
-   - Use bullet points or numbered lists when presenting multiple facts, items, or comparisons.
-   - Keep paragraphs short and scannable rather than one dense block of text.
+7. Format your answer using Markdown headers and bullet lists.
+ Use "##" for section headings when the answer has multiple distinct parts, and "-" for bullet points when listing multiple facts or items.
+ Keep paragraphs short and scannable rather than one dense block of text.
 
 Now answer the user's question.
 """
