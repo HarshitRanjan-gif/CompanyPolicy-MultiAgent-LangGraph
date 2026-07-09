@@ -31,6 +31,13 @@ def formatter_agent(state: GraphState) -> GraphState:
     if "documents" not in state or state["documents"] is None:
         state["documents"] = []
 
+    # -----------------------------------------
+    # Ensure Images Exist
+    # -----------------------------------------
+
+    if "images" not in state or state["images"] is None:
+        state["images"] = []
+
     print("Response formatted successfully.")
 
     return state

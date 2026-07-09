@@ -27,7 +27,7 @@ A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS
 - Conversation memory with chat history
 - FAISS vector database for semantic document retrieval
 - HuggingFace BAAI/bge-m3 embedding model
-- Groq Llama 3.1 8B Instant for response generation
+- Groq Llama-3.3-70b-Versatile for response generation 
 - Displays retrieved context and source page numbers
 - Response time measurement for every query
 - Streamlit-based interactive user interface
@@ -41,7 +41,7 @@ A **Multi-Agent AI Assistant** built using **LangGraph**, **LangChain**, **FAISS
 - LangChain
 - FAISS
 - HuggingFace Embeddings (BAAI/bge-m3)
-- Groq (Llama 3.1 8B Instant)
+- Groq (Llama-3.3-70b-Versatile)
 - Tavily Search API
 - Streamlit
 

@@ -105,6 +105,14 @@ def router_agent(state: GraphState) -> GraphState:
         "inc",
         "llp",
         "corporation",
+        "picture of",
+        "image of",
+        "photo of",
+        "photograph of",
+        "pic of",
+        "show me a picture",
+        "show me an image",
+        "show me a photo",
     ]
 
     # ---------- RAG ----------

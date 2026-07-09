@@ -89,7 +89,9 @@ def render_assistant_message(
 
     context="",
 
-    pages=None
+    pages=None,
+
+    images=None
 
 ):
 
@@ -125,6 +127,20 @@ def render_assistant_message(
     with st.chat_message("assistant"):
 
         st.markdown(answer)
+
+        # -----------------------------------------
+        # Display Images
+        # -----------------------------------------
+
+        if images:
+
+            cols = st.columns(len(images))
+
+            for col, img_url in zip(cols, images):
+
+                with col:
+
+                    st.image(img_url, use_container_width=True)
 
         st.markdown(
 

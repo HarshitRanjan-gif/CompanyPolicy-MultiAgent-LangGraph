@@ -10,7 +10,7 @@ from utils.query_rewriter import rewrite_question
 
 from langchain_groq import ChatGroq
 
-from tools.search import web_search
+from tools.search import web_search, image_search
 
 from state import GraphState
 
@@ -30,6 +30,32 @@ llm = get_llm()
 
 
 # ==========================================================
+# Image Request Keywords
+# ==========================================================
+
+IMAGE_KEYWORDS = [
+    "picture of",
+    "image of",
+    "photo of",
+    "photograph of",
+    "show me a picture",
+    "show me an image",
+    "show me a photo",
+    "give a picture",
+    "give an image",
+    "give a photo",
+    "pic of",
+]
+
+
+def is_image_request(question: str) -> bool:
+
+    question_lower = question.lower()
+
+    return any(keyword in question_lower for keyword in IMAGE_KEYWORDS)
+
+
+# ==========================================================
 # Web Agent
 # ==========================================================
 
@@ -41,18 +67,45 @@ def web_agent(state: GraphState) -> GraphState:
 
     print(f"Question : {question}")
 
-
-    # -----------------------------------------
-    # Search the Web
-    # -----------------------------------------
-
     standalone_question = rewrite_question(state)
+
+    # -----------------------------------------
+    # Image Request Path
+    # -----------------------------------------
+
+    if is_image_request(standalone_question):
+
+        images = image_search(standalone_question)
+
+        if images:
+
+            answer = "Here are some images I found:"
+
+        else:
+
+            answer = "I couldn't find any images for that."
+
+        state["images"] = images
+
+        state["context"] = ""
+
+        state["answer"] = answer
+
+        state["agent"] = "Web Search Agent"
+
+        state["messages"].append(
+
+            AIMessage(content=answer)
+
+        )
+
+        return state
+
+    # -----------------------------------------
+    # Normal Text Search Path
+    # -----------------------------------------
+
     search_result = web_search(standalone_question)
-
-
-    # -----------------------------------------
-    # Build Context
-    # -----------------------------------------
 
     context = ""
 
@@ -61,11 +114,6 @@ def web_agent(state: GraphState) -> GraphState:
         context += f"Title: {result['title']}\n"
 
         context += f"Content: {result['content']}\n\n"
-
-
-    # -----------------------------------------
-    # Generate Answer
-    # -----------------------------------------
 
     prompt = f"""
 You are a professional AI assistant.
@@ -89,13 +137,10 @@ Instructions:
 5. If the answer cannot be found, say:
 "I couldn't find sufficient information."
 6. Provide a complete, well-explained answer. Include relevant details such as names, dates, numbers, or context where available, but avoid repeating the same point multiple times.
-7. Format your answer using Markdown headers and bullet lists.
- Use "##" for section headings when the answer has multiple distinct parts, and "-" for bullet points when listing multiple facts or items.
- Keep paragraphs short and scannable rather than one dense block of text.
+7. Format your answer using Markdown headers and bullet lists. Use "##" for section headings when the answer has multiple distinct parts, and "-" for bullet points when listing multiple facts or items. Keep paragraphs short and scannable rather than one dense block of text.
 
 Now answer the user's question.
 """
-
 
     response = llm.invoke(prompt)
 
@@ -103,6 +148,8 @@ Now answer the user's question.
     # -----------------------------------------
     # Update State
     # -----------------------------------------
+
+    state["images"] = []
 
     state["context"] = context
 

@@ -65,7 +65,9 @@ for message in st.session_state.messages:
 
             context=message["context"],
 
-            pages=message["pages"]
+            pages=message["pages"],
+
+            images=message.get("images", [])
 
         )
 
@@ -117,7 +119,9 @@ if question:
 
         context=result["context"],
 
-        pages=result["pages"]
+        pages=result["pages"],
+
+        images=result.get("images", [])
 
     )
 
@@ -135,7 +139,9 @@ if question:
 
             "context": result["context"],
 
-            "pages": result["pages"]
+            "pages": result["pages"],
+
+            "images": result.get("images", [])
 
         }
 

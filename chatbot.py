@@ -29,6 +29,8 @@ def ask_chatbot(question, session_id=None):
 
             "pages": [],
 
+            "images": [],
+
             "answer": ""
 
         },
