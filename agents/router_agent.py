@@ -29,6 +29,23 @@ llm = get_llm(temperature=0)
 
 
 # ==========================================================
+# Keyword Matching Helper (word-boundary safe)
+# ==========================================================
+
+def contains_keyword(text: str, keywords: list) -> bool:
+
+    for keyword in keywords:
+
+        pattern = r"\b" + re.escape(keyword) + r"\b"
+
+        if re.search(pattern, text):
+
+            return True
+
+    return False
+
+
+# ==========================================================
 # Router Agent
 # ==========================================================
 
@@ -117,7 +134,7 @@ def router_agent(state: GraphState) -> GraphState:
 
     # ---------- RAG ----------
 
-    if any(keyword in question_lower for keyword in rag_keywords):
+    if contains_keyword(question_lower, rag_keywords):
 
         print("Rule-Based Route : rag")
 
@@ -127,7 +144,7 @@ def router_agent(state: GraphState) -> GraphState:
 
     # ---------- WEB ----------
 
-    if any(keyword in question_lower for keyword in web_keywords):
+    if contains_keyword(question_lower, web_keywords):
 
         print("Rule-Based Route : web")
 

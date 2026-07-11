@@ -46,7 +46,8 @@ def render_sidebar():
 def render_header():
 
     st.markdown(
-"""<div style="text-align:center; padding-top:40px;">
+"""
+<div style="text-align:center; padding-top:40px;">
 
 <h1 style="font-size:58px; color:white;">
 🤖 Company AI Assistant
@@ -96,7 +97,7 @@ def render_assistant_message(
 ):
 
     # -----------------------------------------
-    # Agent Badge Color
+    # Agent Badge
     # -----------------------------------------
 
     if agent == "RAG Agent":
@@ -128,19 +129,52 @@ def render_assistant_message(
 
         st.markdown(answer)
 
-        # -----------------------------------------
+        # ======================================================
         # Display Images
-        # -----------------------------------------
+        # ======================================================
 
         if images:
 
-            cols = st.columns(len(images))
+            # Remove duplicate URLs
+            images = list(dict.fromkeys(images))
 
-            for col, img_url in zip(cols, images):
+            # Show only first 4 images
+            images = images[:4]
 
-                with col:
+            # Keep only unique images
+            images = list(dict.fromkeys(images))
 
-                    st.image(img_url, use_container_width=True)
+            # Maximum number of images to display
+            MAX_DISPLAY = 4
+
+            # Create placeholders
+            placeholders = st.columns(MAX_DISPLAY)
+
+            shown = 0
+
+            for img in images:
+
+                if shown >= MAX_DISPLAY:
+                    break
+                try:
+
+                    with placeholders[shown]:
+
+                        st.image(
+                            img,
+                            width="stretch",
+                        )
+
+                    shown += 1
+
+                except Exception:
+
+                    continue
+
+
+        # ======================================================
+        # Agent Badge
+        # ======================================================
 
         st.markdown(
 
@@ -163,11 +197,19 @@ def render_assistant_message(
 
         )
 
+        # ======================================================
+        # Response Time
+        # ======================================================
+
         st.caption(
 
-            f"⏱ Response Time : {response_time} sec"
+            f"⏱ Response Time : {response_time:.2f} sec"
 
         )
+
+        # ======================================================
+        # Source Pages
+        # ======================================================
 
         if pages:
 
@@ -184,6 +226,10 @@ def render_assistant_message(
                 )
 
             )
+
+        # ======================================================
+        # Retrieved Context
+        # ======================================================
 
         if context:
 

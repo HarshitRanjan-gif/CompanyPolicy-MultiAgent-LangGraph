@@ -1,4 +1,5 @@
 import os
+import re
 
 from dotenv import load_dotenv
 
@@ -55,6 +56,32 @@ def is_image_request(question: str) -> bool:
     return any(keyword in question_lower for keyword in IMAGE_KEYWORDS)
 
 
+import re
+
+def extract_image_subject(question: str) -> str:
+
+    q = question.lower().strip()
+
+    patterns = [
+
+        r".*?(?:picture|image|photo|photograph|pic)\s+of\s+",
+
+        r".*?show\s+me\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
+
+        r".*?give\s+me\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
+
+        r".*?find\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
+
+        r".*?where\s+can\s+i\s+find\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
+
+    ]
+
+    for pattern in patterns:
+
+        q = re.sub(pattern, "", q)
+
+    return q.strip(" ?.!")
+
 # ==========================================================
 # Web Agent
 # ==========================================================
@@ -75,7 +102,11 @@ def web_agent(state: GraphState) -> GraphState:
 
     if is_image_request(standalone_question):
 
-        images = image_search(standalone_question)
+        image_subject = extract_image_subject(standalone_question)
+
+        print(f"Image Subject Extracted : {image_subject}")
+
+        images = image_search(image_subject)
 
         if images:
 
