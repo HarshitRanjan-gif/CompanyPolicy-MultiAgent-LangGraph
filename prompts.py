@@ -22,6 +22,10 @@ rag
 
 web
 
+image
+
+imagegen
+
 llm
 
 Do NOT answer the user's question.
@@ -117,8 +121,48 @@ Current President of USA
 
 Stock market today
 
+
 ==================================================
-3. LLM
+3. IMAGE
+==================================================
+
+Return:
+
+image
+
+If the user wants to FIND or SEARCH existing images.
+
+Examples:
+
+- Show me a picture of Messi
+- Show me 5 images of Mount Everest
+- Find photos of Taylor Swift
+- Search images of Iron Man
+- Picture of Eiffel Tower
+- Show wallpapers of Tokyo
+
+==================================================
+4. IMAGE GENERATION
+==================================================
+
+Return:
+
+imagegen
+
+If the user wants a NEW image to be CREATED.
+
+Examples:
+
+- Generate an image of Iron Man
+- Create an anime girl
+- Draw a dragon
+- Make a futuristic city
+- Design a company logo
+- Create a cartoon cat
+
+
+==================================================
+5. LLM
 ==================================================
 
 Return:
@@ -160,7 +204,7 @@ Grammar.
 Writing.
 
 ==================================================
-4. THIS APPLICATION
+6. THIS APPLICATION
 ==================================================
 
 ALWAYS return:

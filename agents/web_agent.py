@@ -1,6 +1,3 @@
-import os
-import re
-
 from dotenv import load_dotenv
 
 from langchain_core.messages import AIMessage
@@ -9,9 +6,7 @@ from config import get_llm
 
 from utils.query_rewriter import rewrite_question
 
-from langchain_groq import ChatGroq
-
-from tools.search import web_search, image_search
+from tools.search import web_search
 
 from state import GraphState
 
@@ -31,58 +26,6 @@ llm = get_llm()
 
 
 # ==========================================================
-# Image Request Keywords
-# ==========================================================
-
-IMAGE_KEYWORDS = [
-    "picture of",
-    "image of",
-    "photo of",
-    "photograph of",
-    "show me a picture",
-    "show me an image",
-    "show me a photo",
-    "give a picture",
-    "give an image",
-    "give a photo",
-    "pic of",
-]
-
-
-def is_image_request(question: str) -> bool:
-
-    question_lower = question.lower()
-
-    return any(keyword in question_lower for keyword in IMAGE_KEYWORDS)
-
-
-import re
-
-def extract_image_subject(question: str) -> str:
-
-    q = question.lower().strip()
-
-    patterns = [
-
-        r".*?(?:picture|image|photo|photograph|pic)\s+of\s+",
-
-        r".*?show\s+me\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
-
-        r".*?give\s+me\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
-
-        r".*?find\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
-
-        r".*?where\s+can\s+i\s+find\s+(?:a\s+)?(?:picture|image|photo|pic)\s+of\s+",
-
-    ]
-
-    for pattern in patterns:
-
-        q = re.sub(pattern, "", q)
-
-    return q.strip(" ?.!")
-
-# ==========================================================
 # Web Agent
 # ==========================================================
 
@@ -96,45 +39,9 @@ def web_agent(state: GraphState) -> GraphState:
 
     standalone_question = rewrite_question(state)
 
-    # -----------------------------------------
-    # Image Request Path
-    # -----------------------------------------
-
-    if is_image_request(standalone_question):
-
-        image_subject = extract_image_subject(standalone_question)
-
-        print(f"Image Subject Extracted : {image_subject}")
-
-        images = image_search(image_subject)
-
-        if images:
-
-            answer = "Here are some images I found:"
-
-        else:
-
-            answer = "I couldn't find any images for that."
-
-        state["images"] = images
-
-        state["context"] = ""
-
-        state["answer"] = answer
-
-        state["agent"] = "Web Search Agent"
-
-        state["messages"].append(
-
-            AIMessage(content=answer)
-
-        )
-
-        return state
-
-    # -----------------------------------------
-    # Normal Text Search Path
-    # -----------------------------------------
+    # ======================================================
+    # Web Search
+    # ======================================================
 
     search_result = web_search(standalone_question)
 
@@ -175,10 +82,9 @@ Now answer the user's question.
 
     response = llm.invoke(prompt)
 
-
-    # -----------------------------------------
+    # ======================================================
     # Update State
-    # -----------------------------------------
+    # ======================================================
 
     state["images"] = []
 

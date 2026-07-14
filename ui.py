@@ -19,6 +19,8 @@ def render_sidebar():
         st.info("🔵 RAG Agent")
         st.warning("🟠 Web Search Agent")
         st.error("🟣 LLM Agent")
+        st.info("🖼️ Image Agent")
+        st.success("🎨 Image Generation Agent")
 
         st.markdown("---")
 
@@ -27,8 +29,11 @@ def render_sidebar():
         st.write("📚 FAISS Vector Store")
         st.write("🤗 BGE-M3 Embeddings")
         st.write("🌐 Tavily Search")
+        st.write("🖼️ SerpAPI (Image Search)")
+        st.write("👁️ Qwen2.5-VL (Image Analysis)")
+        st.write("🎨 OpenAI Images (Image Generation)")
         st.write("⚡ Groq Llama 3.3")
-        st.write("🧠 LangGraph Memory")
+        st.write("🧠 LangGraph")
 
         st.markdown("---")
 
@@ -96,29 +101,39 @@ def render_assistant_message(
 
 ):
 
-    # -----------------------------------------
-    # Agent Badge
-    # -----------------------------------------
+    # ==========================================================
+    # Agent Badge Color
+    # ==========================================================
 
-    if agent == "RAG Agent":
+    if agent == "Router Agent":
 
-        color = "#1976D2"
-        icon = "🔵"
+        color = "#2E7D32"      # Green
+        icon = "🟢"
+
+    elif agent == "RAG Agent":
+
+        color = "#1976D2"      # Blue
+        icon = "📚"
 
     elif agent == "Web Search Agent":
 
-        color = "#FB8C00"
-        icon = "🟠"
+        color = "#FB8C00"      # Orange
+        icon = "🌐"
+
+    elif agent == "Image Agent":
+
+        color = "#0097A7"      # Cyan
+        icon = "🖼️"
+
+    elif agent == "Image Generation Agent":
+
+        color = "#8E24AA"      # Purple
+        icon = "🎨"
 
     elif agent == "LLM Agent":
 
-        color = "#8E24AA"
-        icon = "🟣"
-
-    elif agent == "Router Agent":
-
-        color = "#2E7D32"
-        icon = "🟢"
+        color = "#D81B60"      # Pink
+        icon = "🧠"
 
     else:
 
@@ -135,42 +150,37 @@ def render_assistant_message(
 
         if images:
 
+            print("\n========== UI Images ==========")
+
+            for i, img in enumerate(images, 1):
+                print(f"{i}. {img}")
+
             # Remove duplicate URLs
             images = list(dict.fromkeys(images))
 
-            # Show only first 4 images
-            images = images[:4]
+            MAX_COLUMNS = 4
 
-            # Keep only unique images
-            images = list(dict.fromkeys(images))
+            # Display images in rows of 4
+            for i in range(0, len(images), MAX_COLUMNS):
 
-            # Maximum number of images to display
-            MAX_DISPLAY = 4
+                row = images[i:i + MAX_COLUMNS]
 
-            # Create placeholders
-            placeholders = st.columns(MAX_DISPLAY)
+                cols = st.columns(4)
 
-            shown = 0
+                for col, img in zip(cols, row):
 
-            for img in images:
+                    with col:
 
-                if shown >= MAX_DISPLAY:
-                    break
-                try:
+                        try:
 
-                    with placeholders[shown]:
-
-                        st.image(
+                            st.image(
                             img,
-                            width="stretch",
+                            width=250,
                         )
 
-                    shown += 1
+                        except Exception:
 
-                except Exception:
-
-                    continue
-
+                            continue
 
         # ======================================================
         # Agent Badge

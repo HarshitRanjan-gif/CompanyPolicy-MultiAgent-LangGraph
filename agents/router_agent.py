@@ -1,35 +1,19 @@
-import os
 import re
 
 from dotenv import load_dotenv
 
-from langchain_groq import ChatGroq
-
 from config import get_llm
-
+from prompts import ROUTER_PROMPT
+from state import GraphState
 from utils.query_rewriter import rewrite_question
 
-from prompts import ROUTER_PROMPT
-
-from state import GraphState
-
-
-# ==========================================================
-# Load Environment Variables
-# ==========================================================
-
 load_dotenv()
-
-
-# ==========================================================
-# LLM
-# ==========================================================
 
 llm = get_llm(temperature=0)
 
 
 # ==========================================================
-# Keyword Matching Helper (word-boundary safe)
+# Helper
 # ==========================================================
 
 def contains_keyword(text: str, keywords: list) -> bool:
@@ -46,16 +30,12 @@ def contains_keyword(text: str, keywords: list) -> bool:
 
 
 # ==========================================================
-# Router Agent
+# Router
 # ==========================================================
 
 def router_agent(state: GraphState) -> GraphState:
 
     print("\n========== Router Agent ==========")
-
-    # -----------------------------------------
-    # Rewrite Question
-    # -----------------------------------------
 
     question = state["messages"][-1].content
 
@@ -66,17 +46,16 @@ def router_agent(state: GraphState) -> GraphState:
 
     question_lower = state["standalone_question"].lower()
 
-    # -----------------------------------------
-    # Rule-Based Routing
-    # -----------------------------------------
+    # ======================================================
+    # RAG
+    # ======================================================
 
-    # Company Policy (RAG)
     rag_keywords = [
+
         "leave",
         "attendance",
         "payroll",
         "holiday",
-        "hr",
         "employee",
         "policy",
         "policies",
@@ -85,10 +64,68 @@ def router_agent(state: GraphState) -> GraphState:
         "handbook",
         "benefits",
         "company policy",
+        "hr",
+
     ]
 
-    # Current / External Information (WEB)
+    # ======================================================
+    # IMAGE SEARCH
+    # ======================================================
+
+    image_keywords = [
+
+    "picture of",
+    "pictures of",
+    "image of",
+    "images of",
+    "photo of",
+    "photos of",
+    "photograph of",
+    "pic of",
+
+    "show me a picture",
+    "show me an image",
+    "show me a photo",
+
+    "give me a picture",
+    "give me an image",
+
+    "find a picture",
+
+    ]
+
+    # ======================================================
+    # IMAGE GENERATION
+    # ======================================================
+
+    imagegen_keywords = [
+
+    "generate an image",
+
+    "generate image",
+
+    "create an image",
+
+    "create image",
+
+    "draw a",
+
+    "draw an",
+
+    "illustrate",
+
+    "render",
+
+    "design a logo",
+
+]
+
+    # ======================================================
+    # WEB SEARCH
+    # ======================================================
+
     web_keywords = [
+
         "current",
         "today",
         "latest",
@@ -97,42 +134,44 @@ def router_agent(state: GraphState) -> GraphState:
         "weather",
         "temperature",
         "forecast",
+
         "stock",
         "stock price",
         "share price",
+
         "ceo",
         "founder",
         "president",
         "prime minister",
         "governor",
         "minister",
+
         "election",
-        "live",
+
         "breaking",
+
         "released",
         "release date",
+
         "version",
+
         "price",
         "cost",
         "fees",
         "salary",
+
         "private limited",
         "pvt ltd",
         "limited",
         "inc",
         "llp",
         "corporation",
-        "picture of",
-        "image of",
-        "photo of",
-        "photograph of",
-        "pic of",
-        "show me a picture",
-        "show me an image",
-        "show me a photo",
+
     ]
 
-    # ---------- RAG ----------
+    # ======================================================
+    # Rule Based Routing
+    # ======================================================
 
     if contains_keyword(question_lower, rag_keywords):
 
@@ -142,7 +181,21 @@ def router_agent(state: GraphState) -> GraphState:
 
         return state
 
-    # ---------- WEB ----------
+    if contains_keyword(question_lower, imagegen_keywords):
+
+        print("Rule-Based Route : imagegen")
+
+        state["route"] = "imagegen"
+
+        return state
+
+    if contains_keyword(question_lower, image_keywords):
+
+        print("Rule-Based Route : image")
+
+        state["route"] = "image"
+
+        return state
 
     if contains_keyword(question_lower, web_keywords):
 
@@ -152,9 +205,9 @@ def router_agent(state: GraphState) -> GraphState:
 
         return state
 
-    # -----------------------------------------
+    # ======================================================
     # Ask Router LLM
-    # -----------------------------------------
+    # ======================================================
 
     response = llm.invoke(
 
@@ -166,31 +219,31 @@ def router_agent(state: GraphState) -> GraphState:
 
     )
 
-    # -----------------------------------------
-    # Extract Route
-    # -----------------------------------------
-
     route = response.content.strip().lower()
 
     route = re.sub(r"[^a-z]", "", route)
 
-    # -----------------------------------------
-    # Validate Route
-    # -----------------------------------------
+    valid_routes = {
 
-    valid_routes = {"rag", "web", "llm"}
+        "rag",
+
+        "web",
+
+        "image",
+
+        "imagegen",
+
+        "llm",
+
+    }
 
     if route not in valid_routes:
 
-        print(f"⚠️ Invalid route received: {route}")
+        print(f"⚠ Invalid route: {route}")
 
         route = "llm"
 
     print(f"LLM Selected Route : {route}")
-
-    # -----------------------------------------
-    # Update State
-    # -----------------------------------------
 
     state["route"] = route
 
