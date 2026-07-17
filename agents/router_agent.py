@@ -95,6 +95,33 @@ def router_agent(state: GraphState) -> GraphState:
     ]
 
     # ======================================================
+    # VISION 
+    # ======================================================
+
+    vision_keywords = [
+
+    "this image",
+    "the image",
+    "this picture",
+    "the picture",
+    "photo",
+    "uploaded image",
+    "uploaded picture",
+
+    "describe",
+    "identify",
+    "what is in",
+    "who is in",
+    "what's in",
+
+    "count",
+    "read",
+    "extract",
+    "ocr",
+
+]
+    
+    # ======================================================
     # IMAGE GENERATION
     # ======================================================
 
@@ -172,6 +199,17 @@ def router_agent(state: GraphState) -> GraphState:
     # ======================================================
     # Rule Based Routing
     # ======================================================
+    if (
+    state.get("uploaded_image")
+    and contains_keyword(question_lower, vision_keywords)
+    ):
+
+        print("Rule-Based Route : vision")
+
+        state["route"] = "vision"
+
+        return state
+    
 
     if contains_keyword(question_lower, rag_keywords):
 
@@ -230,6 +268,8 @@ def router_agent(state: GraphState) -> GraphState:
         "web",
 
         "image",
+
+        "vision",
 
         "imagegen",
 

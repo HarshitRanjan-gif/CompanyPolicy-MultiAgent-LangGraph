@@ -31,11 +31,24 @@ def get_image_hash(url: str):
         )
         response.raise_for_status()
 
-        img = Image.open(
+        img = Image.open(BytesIO(response.content)).convert("RGB")
 
-            BytesIO(response.content)
+        # ----------------------------------------------------
+        # Reject extreme aspect ratios
+        # ----------------------------------------------------
 
-        ).convert("RGB")
+        width, height = img.size
+
+        if height == 0:
+            return None
+
+        ratio = width / height
+
+        if ratio < 0.4 or ratio > 2.5:
+
+            print("⏭ Skipped (extreme aspect ratio)")
+
+            return None
 
         return imagehash.phash(img)
 
@@ -43,6 +56,48 @@ def get_image_hash(url: str):
 
         return None
     
+def is_valid_image_url(url: str) -> bool:
+
+    try:
+
+        response = requests.get(
+
+            url,
+
+            timeout=5,
+
+            stream=True,
+
+            headers={
+
+                "User-Agent": "Mozilla/5.0"
+
+            }
+
+        )
+
+        print(
+            url,
+            response.status_code,
+            response.headers.get("Content-Type")
+        )
+
+        if response.status_code != 200:
+
+            return False
+
+        content_type = response.headers.get(
+            "Content-Type",
+            ""
+        ).lower()
+
+        return content_type.startswith("image/")
+
+    except Exception as e:
+
+        print("URL ERROR:", e)
+
+        return False    
 
 def google_image_search(
     request: dict,
@@ -115,11 +170,12 @@ def google_image_search(
     try:
         search = GoogleSearch(params)
         results = search.get_dict()
-    except Exception as e:
-        print(f"SerpAPI Error: {e}")
-        return []
 
-    results = search.get_dict()
+    except Exception as e:
+
+        print(f"SerpAPI Error: {e}")
+
+        return []
 
     images = []
 
@@ -129,9 +185,43 @@ def google_image_search(
 
     for item in results.get("images_results", []):
 
+        source = (item.get("source") or "").lower()
+
+        trusted_sources = {
+            "wikipedia",
+            "simple wikipedia",
+            "imdb",
+            "britannica",
+            "mubi",
+            "golden globes",
+            "getty images",
+            "people",
+            "ap news",
+            "reuters",
+        }
+
+        blocked_sources = {
+            "instagram",
+            "facebook",
+            "pinterest",
+            "fandom",
+            "wikia",
+            "reddit",
+        }
+
+        if any(site in source for site in blocked_sources):
+
+            print(f"⏭ Skipped (blocked source: {source})")
+
+            continue
+
         url = item.get("original") or item.get("thumbnail")
 
         if not url:
+            continue
+
+        if not is_valid_image_url(url):
+            print("⏭ Skipped (malformed URL)")
             continue
 
         if url in exclude_urls:

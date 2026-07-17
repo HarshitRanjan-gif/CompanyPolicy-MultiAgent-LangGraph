@@ -1,3 +1,16 @@
+import os
+
+from dotenv import load_dotenv
+from google import genai
+from PIL import Image
+
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+
 # ==========================================================
 # Image Analysis
 # ==========================================================
@@ -7,25 +20,43 @@ def analyze_image(
     question: str = "",
 ):
     """
-    Placeholder for future vision models.
-
-    Later this function will use:
-
-    - Qwen2.5-VL
-    - LLaVA
-    - Florence-2
-    - GPT Vision
-
-    depending on configuration.
+    Analyze an image using Gemini Vision.
     """
 
-    if question.strip():
+    try:
 
-        return (
-            "Image analysis is not implemented yet.\n\n"
-            f"Question: {question}"
+        image = Image.open(image_path)
+
+    except Exception as e:
+
+        return f"Unable to open image.\n\n{e}"
+
+    # -----------------------------------------
+    # Default Prompt
+    # -----------------------------------------
+
+    if not question.strip():
+
+        question = (
+            "Describe this image in as much detail as possible. "
+            "Identify people, objects, text, locations, colors, "
+            "activities and anything important."
         )
 
-    return (
-        "Image analysis is not implemented yet."
-    )
+    try:
+
+        response = client.models.generate_content(
+
+            model="models/gemini-3.5-flash",
+
+            contents=[
+                question,
+                image,
+            ],
+        )
+
+        return response.text
+
+    except Exception as e:
+
+        return f"Gemini Vision Error:\n\n{e}"

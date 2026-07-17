@@ -50,13 +50,15 @@ class GraphState(TypedDict):
     # Uploaded Image
     # ==========================================================
 
-    uploaded_image: Optional[str]
+    uploaded_image: Optional[str]   # Local uploaded image path
+    uploaded_image_name: Optional[str]
 
     # ==========================================================
     # Image Analysis
     # ==========================================================
 
     image_analysis: str
+    vision_model: str
 
     # ==========================================================
     # Image Generation

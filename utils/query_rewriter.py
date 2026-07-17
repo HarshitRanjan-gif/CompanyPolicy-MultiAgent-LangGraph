@@ -1,26 +1,49 @@
+import re
 import os
 
 from dotenv import load_dotenv
-
 from config import get_llm
 
-from langchain_groq import ChatGroq
-
-from utils.chat_history import get_conversation, get_recent_messages
-
-
-# ==========================================================
-# Load Environment Variables
-# ==========================================================
+from utils.chat_history import (
+    get_conversation,
+    get_recent_messages,
+)
 
 load_dotenv()
 
-
-# ==========================================================
-# LLM
-# ==========================================================
-
 llm = get_llm(temperature=0)
+
+
+# ==========================================================
+# Small Talk
+# ==========================================================
+
+SMALL_TALK = {
+    "hi",
+    "hello",
+    "hey",
+    "thanks",
+    "thank you",
+    "thankyou",
+    "ok",
+    "okay",
+    "ok thanks",
+    "okay thanks",
+    "ok done",
+    "ok done thanks",
+    "done",
+    "bye",
+    "goodbye",
+    "good night",
+    "good morning",
+    "good afternoon",
+    "good evening",
+    "see you",
+    "nice",
+    "great",
+    "awesome",
+    "cool",
+}
 
 
 # ==========================================================
@@ -29,25 +52,40 @@ llm = get_llm(temperature=0)
 
 def rewrite_question(state):
 
-    question = state["messages"][-1].content
+    question = state["messages"][-1].content.strip()
+
+    question_lower = re.sub(r"\s+", " ", question.lower())
+
+    # -----------------------------------------
+    # Skip rewriting for greetings / small talk
+    # -----------------------------------------
+
+    if question_lower in SMALL_TALK:
+
+        print("\n========== Query Rewriter ==========")
+        print(f"Original : {question}")
+        print("Rewritten : (Skipped)")
+        print()
+
+        return question
 
     recent_messages = get_recent_messages(state["messages"])
 
     conversation = get_conversation(recent_messages)
 
     prompt = f"""
-You are an AI assistant.
+You are a query rewriting assistant.
 
-Your task is to rewrite the user's latest question into a complete standalone question.
-
-Use the previous conversation only if it is required.
+Rewrite ONLY when needed.
 
 Rules:
 
-- Do NOT answer the question.
-- Do NOT explain.
-- Return ONLY the rewritten question.
-- If the latest question is already complete, return it unchanged.
+- Preserve the user's meaning exactly.
+- Never change facts.
+- Never guess what the user intended.
+- Never replace named entities.
+- Never rewrite greetings, thanks, confirmations or acknowledgements.
+- If the question is already complete, return it unchanged.
 
 Conversation:
 
@@ -65,9 +103,7 @@ Standalone Question:
     rewritten_question = response.content.strip()
 
     print("\n========== Query Rewriter ==========")
-
     print(f"Original : {question}")
-
     print(f"Rewritten : {rewritten_question}")
 
     return rewritten_question

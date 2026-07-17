@@ -146,8 +146,83 @@ def get_control_response(text: str):
 
     text = normalize_text(text)
 
-    if text in CONVERSATION_RESPONSES:
+    # Remove punctuation
+    text = re.sub(r"[^\w\s]", "", text)
 
+    # Collapse multiple spaces
+    text = re.sub(r"\s+", " ", text).strip()
+
+    # --------------------------------------------------
+    # Greetings
+    # --------------------------------------------------
+
+    greetings = [
+        "hi",
+        "hello",
+        "hey",
+        "hii",
+        "good morning",
+        "good afternoon",
+        "good evening",
+    ]
+
+    if any(text.startswith(word) for word in greetings):
+        return random.choice(CONVERSATION_RESPONSES["hi"])
+
+    # --------------------------------------------------
+    # Thanks
+    # --------------------------------------------------
+
+    thanks = [
+        "thanks",
+        "thank you",
+        "thankyou",
+        "thx",
+    ]
+
+    if any(word in text for word in thanks):
+        return random.choice(CONVERSATION_RESPONSES["thanks"])
+
+    # --------------------------------------------------
+    # Acknowledgements
+    # --------------------------------------------------
+
+    acknowledgements = [
+        "ok",
+        "okay",
+        "done",
+        "cool",
+        "nice",
+        "great",
+        "awesome",
+        "perfect",
+        "fine",
+        "alright",
+    ]
+
+    if any(text.startswith(word) for word in acknowledgements):
+        return "Glad I could help! 😊"
+
+    # --------------------------------------------------
+    # Goodbye
+    # --------------------------------------------------
+
+    goodbye = [
+        "bye",
+        "goodbye",
+        "see you",
+        "exit",
+        "quit",
+    ]
+
+    if any(word in text for word in goodbye):
+        return random.choice(CONVERSATION_RESPONSES["bye"])
+
+    # --------------------------------------------------
+    # Exact Match
+    # --------------------------------------------------
+
+    if text in CONVERSATION_RESPONSES:
         return random.choice(CONVERSATION_RESPONSES[text])
 
     return None

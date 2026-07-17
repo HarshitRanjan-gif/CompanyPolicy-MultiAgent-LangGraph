@@ -1,5 +1,5 @@
 import streamlit as st
-
+import os
 
 # ==========================================================
 # Sidebar
@@ -41,7 +41,12 @@ def render_sidebar():
 
             st.session_state.messages = []
 
-            st.rerun()
+            st.session_state.active_image = None
+            st.session_state.active_image_name = None
+            st.session_state.last_uploaded_file_id = None
+
+            st.session_state.upload_key += 1
+
 
 
 # ==========================================================
@@ -74,9 +79,17 @@ Multi-Agent AI powered by LangGraph
 # User Message
 # ==========================================================
 
-def render_user_message(message):
+# ==========================================================
+# User Message
+# ==========================================================
+
+def render_user_message(message, image_path=None):
 
     with st.chat_message("user"):
+
+        if image_path and os.path.exists(image_path):
+
+            st.image(image_path, width=250)
 
         st.markdown(message)
 
@@ -246,3 +259,30 @@ def render_assistant_message(
             with st.expander("📚 Retrieved Context"):
 
                 st.write(context)
+
+# ==========================================================
+# Chat Input
+# ==========================================================
+
+def render_chat_input():
+
+    prompt = st.chat_input(
+        "Ask anything...",
+        accept_file=True,
+        file_type=["png", "jpg", "jpeg", "webp"],
+        key="main_chat_input",
+    )
+
+    if prompt is None:
+
+        return None, None
+
+    question = prompt.text if prompt.text else None
+
+    uploaded_file = None
+
+    if prompt["files"]:
+
+        uploaded_file = prompt["files"][0]
+
+    return question, uploaded_file

@@ -5,8 +5,6 @@ from langchain_core.prompts import ChatPromptTemplate
 # Router Prompt
 # ==========================================================
 
-from langchain_core.prompts import ChatPromptTemplate
-
 ROUTER_PROMPT = ChatPromptTemplate.from_messages(
 [
 (
@@ -24,6 +22,8 @@ web
 
 image
 
+vision
+
 imagegen
 
 llm
@@ -32,6 +32,11 @@ Do NOT answer the user's question.
 Do NOT explain your reasoning.
 Do NOT return punctuation.
 Do NOT return a sentence.
+If multiple routes seem possible, choose the MOST SPECIFIC route.
+
+Priority:
+
+vision > imagegen > image > rag > web > llm
 
 ==================================================
 1. RAG
@@ -123,7 +128,36 @@ Stock market today
 
 
 ==================================================
-3. IMAGE
+3. VISION
+==================================================
+
+Return:
+
+vision
+
+If the user has uploaded an image and is asking about that image.
+
+Examples:
+
+What is in this image?
+
+Describe this image.
+
+Read the text in this image.
+
+Count the people.
+
+Explain this graph.
+
+What breed is this dog?
+
+What is written on this receipt?
+
+What is the total amount?
+
+
+==================================================
+4. IMAGE
 ==================================================
 
 Return:
@@ -142,7 +176,7 @@ Examples:
 - Show wallpapers of Tokyo
 
 ==================================================
-4. IMAGE GENERATION
+5. IMAGE GENERATION
 ==================================================
 
 Return:
@@ -162,7 +196,7 @@ Examples:
 
 
 ==================================================
-5. LLM
+6. LLM
 ==================================================
 
 Return:
@@ -204,7 +238,7 @@ Grammar.
 Writing.
 
 ==================================================
-6. THIS APPLICATION
+7. THIS APPLICATION
 ==================================================
 
 ALWAYS return:
@@ -274,6 +308,21 @@ What is Python?
 Latest Python version.
 → web
 
+Show me pictures of Messi.
+→ image
+
+Find images of Mount Everest.
+→ image
+
+Generate an image of Iron Man.
+→ imagegen
+
+Create a futuristic city.
+→ imagegen
+
+Describe this uploaded image.
+→ vision
+
 Return ONLY:
 
 rag
@@ -281,6 +330,18 @@ rag
 or
 
 web
+
+or
+
+image
+
+or
+
+vision
+
+or
+
+imagegen
 
 or
 

@@ -11,6 +11,7 @@ from agents.web_agent import web_agent
 from agents.llm_agent import llm_agent
 
 from agents.image_agent import image_agent
+from agents.vision_agent import vision_agent
 from agents.imagegen_agent import imagegen_agent
 
 
@@ -41,6 +42,8 @@ builder.add_node("rag", rag_agent)
 builder.add_node("web", web_agent)
 
 builder.add_node("image", image_agent)
+
+builder.add_node("vision", vision_agent)
 
 builder.add_node("imagegen", imagegen_agent)
 
@@ -74,6 +77,8 @@ builder.add_conditional_edges(
 
         "image": "image",
 
+        "vision": "vision",
+
         "imagegen": "imagegen",
 
         "llm": "llm",
@@ -92,6 +97,8 @@ builder.add_edge("rag", "formatter")
 builder.add_edge("web", "formatter")
 
 builder.add_edge("image", "formatter")
+
+builder.add_edge("vision", "formatter")
 
 builder.add_edge("imagegen", "formatter")
 

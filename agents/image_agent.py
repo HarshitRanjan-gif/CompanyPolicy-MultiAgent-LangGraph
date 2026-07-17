@@ -36,38 +36,6 @@ def image_agent(state: GraphState) -> GraphState:
     print(f"Standalone : {standalone_question}")
 
     # ======================================================
-    # Uploaded Image (future)
-    # ======================================================
-
-    if state.get("uploaded_image"):
-
-        print("Mode : Image Analysis")
-
-        # Placeholder
-
-        answer = analyze_image(
-
-            state["uploaded_image"],
-
-            standalone_question,
-
-        )
-
-        state["image_analysis"] = answer
-
-        state["answer"] = answer
-
-        state["agent"] = "Image Agent"
-
-        state["messages"].append(
-
-            AIMessage(content=answer)
-
-        )
-
-        return state
-
-    # ======================================================
     # Image Search
     # ======================================================
 
