@@ -9,7 +9,7 @@ def render_sidebar():
 
     with st.sidebar:
 
-        st.title("🤖 Company AI Assistant")
+        st.title("🤖 Smart AI Assistant")
 
         st.markdown("---")
 
@@ -20,6 +20,7 @@ def render_sidebar():
         st.warning("🟠 Web Search Agent")
         st.error("🟣 LLM Agent")
         st.info("🖼️ Image Agent")
+        st.warning("👁️ Vision Agent")
         st.success("🎨 Image Generation Agent")
 
         st.markdown("---")
@@ -31,7 +32,7 @@ def render_sidebar():
         st.write("🌐 Tavily Search")
         st.write("🖼️ SerpAPI (Image Search)")
         st.write("👁️ Qwen2.5-VL (Image Analysis)")
-        st.write("🎨 OpenAI Images (Image Generation)")
+        st.write("🎨 Pollinations.ai (Image Generation)")
         st.write("⚡ Groq Llama 3.3")
         st.write("🧠 LangGraph")
 
@@ -60,7 +61,7 @@ def render_header():
 <div style="text-align:center; padding-top:40px;">
 
 <h1 style="font-size:58px; color:white;">
-🤖 Company AI Assistant
+🤖 Smart AI Assistant
 </h1>
 
 <p style="font-size:22px; color:#A0A0A0;">
@@ -74,10 +75,6 @@ Multi-Agent AI powered by LangGraph
 
     st.divider()
 
-
-# ==========================================================
-# User Message
-# ==========================================================
 
 # ==========================================================
 # User Message
@@ -139,6 +136,11 @@ def render_assistant_message(
 
         color = "#0097A7"      # Cyan
         icon = "🖼️"
+
+    elif agent == "Vision Agent":
+
+        color = "#F9A825"      # Amber/Gold
+        icon = "👁️"
 
     elif agent == "Image Generation Agent":
 

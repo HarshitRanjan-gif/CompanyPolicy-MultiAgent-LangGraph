@@ -21,7 +21,7 @@ from ui import (
 
 st.set_page_config(
 
-    page_title="Company AI Assistant",
+    page_title="Smart AI Assistant",
 
     page_icon="🤖",
 
