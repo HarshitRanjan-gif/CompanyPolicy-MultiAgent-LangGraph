@@ -88,7 +88,9 @@ for message in st.session_state.messages:
 
             pages=message["pages"],
 
-            images=message.get("images", [])
+            images=message.get("images", []),
+
+            generated_images=message.get("generated_images", [])
 
         )
 
@@ -199,7 +201,9 @@ if question:
 
             pages=result["pages"],
 
-            images=result.get("images", [])
+            images=result.get("images", []),
+
+            generated_images=result.get("generated_images", [])
 
         )
 
@@ -237,7 +241,9 @@ if question:
 
             "pages": result["pages"],
 
-            "images": result.get("images", [])
+            "images": result.get("images", []),
+
+            "generated_images": result.get("generated_images", [])
 
         }
 

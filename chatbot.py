@@ -35,7 +35,7 @@ def ask_chatbot(question, session_id=None, uploaded_image=None, uploaded_image_t
 
             "uploaded_image_type": uploaded_image_type or "",
 
-            "generated_image": "",
+            "generated_images": [],
 
             "answer": ""
 
@@ -84,7 +84,7 @@ def ask_chatbot_stream(question, session_id=None, uploaded_image=None, uploaded_
 
         "uploaded_image_type": uploaded_image_type or "",
 
-        "generated_image": "",
+        "generated_images": [],
 
         "answer": ""
 

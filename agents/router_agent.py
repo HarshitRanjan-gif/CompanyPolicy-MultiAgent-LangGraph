@@ -39,12 +39,40 @@ def router_agent(state: GraphState) -> GraphState:
 
     question = state["messages"][-1].content
 
+    question_raw_lower = question.lower().strip()
+
+    # -----------------------------------------
+    # Identity questions - checked FIRST, before rewriting,
+    # so conversation history can never distort these
+    # -----------------------------------------
+
+    identity_phrases = [
+        "your name",
+        "what is your name",
+        "who are you",
+        "tell me about yourself",
+        "introduce yourself",
+        "what are you",
+        "about yourself",
+    ]
+
+    if contains_keyword(question_raw_lower, identity_phrases):
+
+        print("Rule-Based Route : llm (identity)")
+
+        state["standalone_question"] = question  # no rewriting needed
+
+        state["route"] = "llm"
+
+        return state
+
     state["standalone_question"] = rewrite_question(state)
 
     print(f"Latest Question     : {question}")
     print(f"Standalone Question : {state['standalone_question']}")
 
     question_lower = state["standalone_question"].lower()
+    raw_question_lower = question.lower()
 
     # ======================================================
     # RAG
@@ -125,27 +153,24 @@ def router_agent(state: GraphState) -> GraphState:
     # IMAGE GENERATION
     # ======================================================
 
-    imagegen_keywords = [
-
-    "generate an image",
-
-    "generate image",
-
-    "create an image",
-
-    "create image",
-
-    "draw a",
-
-    "draw an",
-
-    "illustrate",
-
-    "render",
-
-    "design a logo",
-
-]
+    # Image Generation
+    image_gen_keywords = [
+        "generate an image",
+        "generate a picture",
+        "generate art",
+        "create an image",
+        "create a picture",
+        "draw a picture",
+        "draw an image",
+        "make an image",
+        "make a picture",
+        "imagine an image",
+        "design an image",
+        "generate a",       # catches "generate a dragon", "generate a robot"
+        "generate an",
+        "create a",
+        "create an",
+    ]
 
     # ======================================================
     # WEB SEARCH
@@ -219,11 +244,32 @@ def router_agent(state: GraphState) -> GraphState:
 
         return state
 
-    if contains_keyword(question_lower, imagegen_keywords):
 
-        print("Rule-Based Route : imagegen")
+    continuation_phrases = ["more", "another", "few more", "again", "one more"]
 
-        state["route"] = "imagegen"
+    word_count = len(raw_question_lower.split())
+
+    is_continuation = (
+
+        word_count <= 4
+
+        and any(phrase in raw_question_lower for phrase in continuation_phrases)
+
+    )
+
+    if is_continuation and state.get("last_image_agent"):
+
+        print(f"Rule-Based Route : {state['last_image_agent']} (continuation)")
+
+        state["route"] = state["last_image_agent"]
+
+        return state
+
+    if contains_keyword(raw_question_lower, image_gen_keywords):
+
+        print("Rule-Based Route : image_gen")
+
+        state["route"] = "image_gen"
 
         return state
 
@@ -271,7 +317,7 @@ def router_agent(state: GraphState) -> GraphState:
 
         "vision",
 
-        "imagegen",
+        "image_gen",
 
         "llm",
 

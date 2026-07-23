@@ -140,4 +140,6 @@ def image_agent(state: GraphState) -> GraphState:
         AIMessage(content=answer)
     )
 
+    state["last_image_agent"] = "image"
+
     return state

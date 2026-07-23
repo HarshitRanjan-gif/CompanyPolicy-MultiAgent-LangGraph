@@ -32,6 +32,13 @@ def formatter_agent(state: GraphState) -> GraphState:
         state["documents"] = []
 
     # -----------------------------------------
+    # Ensure Generated Images Exist
+    # -----------------------------------------
+
+    if "generated_images" not in state or state["generated_images"] is None:
+        state["generated_images"] = []
+
+    # -----------------------------------------
     # Ensure Images Exist
     # -----------------------------------------
 

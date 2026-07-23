@@ -110,7 +110,9 @@ def render_assistant_message(
 
     pages=None,
 
-    images=None
+    images=None,
+
+    generated_images=None
 
 ):
 
@@ -194,6 +196,27 @@ def render_assistant_message(
                         except Exception:
 
                             continue
+
+        # ======================================================
+        # Display Generated Images
+        # ======================================================
+
+        if generated_images:
+
+            print("\n========== Generated Images ==========")
+
+            for i, img in enumerate(generated_images, 1):
+                print(f"{i}. {img}")
+
+            for img_url in generated_images:
+
+                try:
+
+                    st.image(img_url, width=400)
+
+                except Exception:
+
+                    continue
 
         # ======================================================
         # Agent Badge

@@ -65,6 +65,7 @@ class GraphState(TypedDict):
     # ==========================================================
 
     generated_images: List[str]
+    last_image_agent: str
 
     # ==========================================================
     # Final Response
