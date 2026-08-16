@@ -14,3 +14,4 @@ python-dotenv
 pypdf
 tavily-python
 ImageHash
+google-search-results
