@@ -13,3 +13,4 @@ huggingface-hub
 python-dotenv
 pypdf
 tavily-python
+ImageHash
